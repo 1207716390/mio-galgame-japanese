@@ -26,7 +26,7 @@
     button { border: 1px solid rgba(240, 212, 138, .35); color: #f7f0df; background: rgba(255,255,255,.06); border-radius: 999px; padding: 10px 16px; cursor: pointer; transition: .18s ease; white-space: nowrap; }
     button:hover { background: rgba(240, 212, 138, .16); border-color: rgba(240, 212, 138, .62); }
     .debug-toggle { position: fixed; z-index: 20; right: 14px; top: 14px; padding: 8px 12px; font-size: 12px; }
-    .debug { display: none; position: fixed; z-index: 20; right: 14px; top: 54px; min-width: 220px; padding: 12px; border-radius: 12px; background: rgba(0,0,0,.74); color: white; font: 12px Consolas, monospace; line-height: 1.7; }
+    .debug { display: none; position: fixed; z-index: 20; right: 14px; top: 54px; min-width: 250px; padding: 12px; border-radius: 12px; background: rgba(0,0,0,.74); color: white; font: 12px Consolas, monospace; line-height: 1.7; }
     .debug.open { display: block; }
     .messages { position: fixed; z-index: 4; left: clamp(20px, 5vw, 70px); bottom: 265px; width: min(420px, 42vw); max-height: 130px; overflow: hidden; padding: 0; margin: 0; list-style: none; color: rgba(247,240,223,.72); font-size: 13px; text-shadow: 0 2px 14px #000; }
     .secret { display: none; position: fixed; z-index: 6; left: clamp(20px, 6vw, 84px); top: 24vh; width: min(380px, 86vw); padding: 18px; border: 1px solid rgba(240, 212, 138, .38); border-radius: 16px; background: rgba(20, 12, 28, .72); backdrop-filter: blur(14px); box-shadow: 0 18px 54px rgba(0,0,0,.42); }
@@ -34,19 +34,58 @@
     .secret h2 { margin: 0 0 10px; color: #f0d48a; font-size: 19px; }
     .secret p { margin: 8px 0; color: rgba(247,240,223,.82); }
     .secret input { width: 100%; margin: 8px 0 12px; }
-    @media (max-width: 720px) { .mio { right: -28%; left: auto; transform: none; height: 76vh; opacity: .88; } .dialogue { height: 250px; bottom: 12px; padding: 18px; } .bar { left: 18px; right: 18px; flex-wrap: wrap; } .bar input { flex-basis: 100%; } .messages { display: none; } }
+    .missing { display: none; position: fixed; left: 50%; top: 45%; z-index: 4; transform: translateX(-50%); padding: 12px 16px; background: rgba(0,0,0,.78); border-radius: 10px; color: #fff; }
+    @media (max-width: 720px) { .mio { height: 76vh; opacity: .88; } .dialogue { height: 250px; bottom: 12px; padding: 18px; } .bar { left: 18px; right: 18px; flex-wrap: wrap; } .bar input { flex-basis: 100%; } .messages { display: none; } }
   </style>
 </head>
 <body>
   <div class="bg"></div>
   <div class="floor"></div>
   <section class="scene-copy"><h1 id="scene-title">放学后的教室</h1><p>她似乎已经等你很久了。</p></section>
-  <img class="mio" src="https://tse2.mm.bing.net/th/id/OIP.jQ3hKyp5owImOB_yyxDRxAHaLH?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Mio" />
+  <img class="mio" id="mio-portrait" src="https://tse2.mm.bing.net/th/id/OIP.jQ3hKyp5owImOB_yyxDRxAHaLH?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Mio" />
+  <p class="missing" id="missing-expression-image">Missing expression image.</p>
   <ul class="messages" id="message-list"></ul>
-  <section class="secret" id="secret-card"><h2 id="secret-title">秘密剧情</h2><p id="secret-body">澪：「如果你能用日语邀请我一起回家……我就告诉你一个秘密。」</p><p><strong>一緒に帰りませんか？</strong><br>いっしょに かえりませんか？<br>要一起回家吗？</p><button id="secret-open">我来试试</button><div id="secret-input-area" hidden><input id="secret-input" placeholder="输入你刚才学会的日语句子..." /><button id="secret-submit">提交给澪</button></div></section>
-  <main class="dialogue"><div class="name">澪 Mio <span style="opacity:.55">好感度 <span id="affection">66</span></span></div><div class="line" id="line">今日は一緒に練習してくれる？</div><div class="sub" id="translation">今天也愿意陪我一起练习吗？</div><div class="bar"><input id="input" placeholder="……想对我说什么？" /><button id="send">发送</button><button id="continue">继续</button><button id="speak">语音</button></div></main>
+
+  <section class="secret" id="secret-card">
+    <h2 id="secret-title">秘密剧情</h2>
+    <p id="secret-body">澪：「如果你能用日语邀请我一起回家……我就告诉你一个秘密。」</p>
+    <p><strong>一緒に帰りませんか？</strong><br>いっしょに かえりませんか？<br>要一起回家吗？</p>
+    <button id="secret-open">我来试试</button>
+    <div id="secret-input-area" hidden>
+      <input id="secret-input" placeholder="输入你刚才学会的日语句子..." />
+      <button id="secret-submit">提交给澪</button>
+    </div>
+  </section>
+
+  <main class="dialogue">
+    <div class="name">澪 Mio <span style="opacity:.55">好感度 <span id="affection">66</span></span></div>
+    <div class="line" id="line">今日は一緒に練習してくれる？</div>
+    <div class="sub" id="translation">今天也愿意陪我一起练习吗？</div>
+    <div class="bar">
+      <input id="input" placeholder="……想对我说什么？" />
+      <button id="send">发送</button>
+      <button id="continue">继续</button>
+      <button id="speak">语音</button>
+    </div>
+  </main>
+
   <button class="debug-toggle" id="debug-toggle">Debug</button>
-  <aside class="debug" id="debug"><strong>DEBUG PANEL</strong><br>input: <span id="debug-input"></span><br>affection: <span id="debug-affection"></span><br>storyIndex: <span id="debug-story"></span><br>messages: <span id="debug-messages"></span><br>speech: <span id="debug-speech"></span><br>lastAction: <span id="debug-action"></span><br>validInput: <span id="debug-valid"></span><br>secretUnlocked: <span id="debug-secret"></span><br>secretInput: <span id="debug-secret-input"></span><br>secretResult: <span id="debug-secret-result"></span></aside>
+  <aside class="debug" id="debug">
+    <strong>DEBUG PANEL</strong><br>
+    input: <span id="debug-input"></span><br>
+    affection: <span id="debug-affection"></span><br>
+    storyIndex: <span id="debug-story"></span><br>
+    messages: <span id="debug-messages"></span><br>
+    speech: <span id="debug-speech"></span><br>
+    lastAction: <span id="debug-action"></span><br>
+    validInput: <span id="debug-valid"></span><br>
+    currentExpression: <span id="debug-expression"></span><br>
+    secretUnlocked: <span id="debug-secret"></span><br>
+    secretChallengeVisible: <span id="debug-secret-visible"></span><br>
+    secretInput: <span id="debug-secret-input"></span><br>
+    secretResult: <span id="debug-secret-result"></span>
+  </aside>
+
   <script>
     const story = [
       ["放学后的教室", "今日は一緒に練習してくれる？", "今天也愿意陪我一起练习吗？"],
@@ -55,25 +94,193 @@
       ["练习邀请", "じゃあ、あなたの声で言ってみて？", "那你用自己的声音说说看。"],
       ["黄昏走廊", "嗯，比刚才自然多了。看来你也不是完全没天赋。", "她的语气很平静，但眼神柔和了一点。"]
     ];
-    let input = "", messages = [], affection = 66, storyIndex = 0, lastAction = "none", validInput = false, secretUnlocked = false, secretResult = "idle";
+
+    const fallbackImage = "https://tse2.mm.bing.net/th/id/OIP.jQ3hKyp5owImOB_yyxDRxAHaLH?r=0&rs=1&pid=ImgDetMain&o=7&rm=3";
+    const expressionImageMap = {
+      normal: "./assets/mio/mio-normal.png",
+      happy: "./assets/mio/mio-happy.png",
+      shy: "./assets/mio/mio-shy.png",
+      serious: "./assets/mio/mio-serious.png"
+    };
+
+    let input = "";
+    let messages = [];
+    let affection = 66;
+    let storyIndex = 0;
+    let lastAction = "none";
+    let validInput = false;
+    let currentExpression = "normal";
+    let secretUnlocked = false;
+    let secretChallengeVisible = false;
+    let secretResult = "idle";
+
     const $ = (id) => document.getElementById(id);
-    function isValidJapaneseLearningInput(text) { return ["こんにちは","ありがとう","一緒","帰り","日本語","すみません","おはよう","こんばんは","日语","一起","回家","谢谢"].some(k => text.includes(k)); }
-    function addMessage(role, text) { messages.push(`${role}：${text}`); $("message-list").innerHTML = messages.slice(-5).map(m => `<li>${m}</li>`).join(""); }
-    function render() {
-      $("scene-title").textContent = story[storyIndex][0]; $("line").textContent = story[storyIndex][1]; $("translation").textContent = story[storyIndex][2]; $("affection").textContent = affection;
-      $("debug-input").textContent = input || "(empty)"; $("debug-affection").textContent = affection; $("debug-story").textContent = storyIndex; $("debug-messages").textContent = messages.length; $("debug-speech").textContent = "speechSynthesis" in window; $("debug-action").textContent = lastAction; $("debug-valid").textContent = validInput; $("debug-secret").textContent = secretUnlocked; $("debug-secret-input").textContent = ($("secret-input").value || "(empty)"); $("debug-secret-result").textContent = secretResult;
-      $("secret-card").classList.toggle("show", affection >= 75 && !secretUnlocked);
-      if (secretUnlocked) { $("secret-card").classList.add("show"); $("secret-title").textContent = "澪的秘密"; $("secret-body").textContent = "其实……我每天都在等你来练习。只是这种话，让我自己说出来有点不公平。 已解锁"; $("secret-open").hidden = true; $("secret-input-area").hidden = true; }
+
+    function isValidJapaneseLearningInput(text) {
+      const input = text.trim().toLowerCase();
+      const validKeywords = [
+        "こんにちは", "ありがとう", "一緒", "帰り", "帰りませんか", "日本語",
+        "すみません", "おはよう", "こんばんは", "日语", "一起", "回家", "谢谢"
+      ];
+      return validKeywords.some((keyword) => input.includes(keyword.toLowerCase()));
     }
-    function assistantReply(text) { const good = isValidJapaneseLearningInput(text); const reply = good ? "えっ…発音、少し自然になったね。" : "嗯…用我们今天学的日语试试看？"; addMessage("澪", reply); affection = Math.min(affection + 3, 100); lastAction = "ai reply success"; render(); }
-    $("input").addEventListener("input", e => { input = e.target.value; lastAction = "typing"; render(); });
-    $("send").addEventListener("click", () => { if (!input.trim()) { lastAction = "send blocked"; render(); return; } const text = input.trim(); validInput = isValidJapaneseLearningInput(text); addMessage("我", text); if (validInput) { affection = Math.min(affection + 2, 100); lastAction = "valid learning input"; } else { lastAction = "invalid input no reward"; } input = ""; $("input").value = ""; render(); setTimeout(() => assistantReply(text), 800); });
-    $("continue").addEventListener("click", () => { storyIndex = Math.min(storyIndex + 1, story.length - 1); affection = Math.min(affection + 1, 100); lastAction = "continue success"; render(); });
-    $("speak").addEventListener("click", () => { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(story[storyIndex][1]); u.lang = "ja-JP"; u.rate = .9; u.pitch = 1.1; speechSynthesis.speak(u); lastAction = "speech success"; } catch(e) { lastAction = "speech failed"; } render(); });
+
+    function addMessage(role, text) {
+      messages.push(`${role}：${text}`);
+      $("message-list").innerHTML = messages.slice(-5).map((message) => `<li>${message}</li>`).join("");
+    }
+
+    function setExpression(expression) {
+      currentExpression = expression;
+      const portrait = $("mio-portrait");
+      const missing = $("missing-expression-image");
+      const nextSrc = expressionImageMap[expression] || expressionImageMap.normal;
+      portrait.dataset.expression = expression;
+      portrait.onerror = () => {
+        portrait.onerror = null;
+        portrait.src = fallbackImage;
+        missing.style.display = "none";
+      };
+      portrait.onload = () => {
+        missing.style.display = "none";
+      };
+      portrait.src = nextSrc;
+    }
+
+    function render() {
+      $("scene-title").textContent = story[storyIndex][0];
+      $("line").textContent = story[storyIndex][1];
+      $("translation").textContent = story[storyIndex][2];
+      $("affection").textContent = affection;
+      $("debug-input").textContent = input || "(empty)";
+      $("debug-affection").textContent = affection;
+      $("debug-story").textContent = storyIndex;
+      $("debug-messages").textContent = messages.length;
+      $("debug-speech").textContent = "speechSynthesis" in window;
+      $("debug-action").textContent = lastAction;
+      $("debug-valid").textContent = validInput;
+      $("debug-expression").textContent = currentExpression;
+      $("debug-secret").textContent = secretUnlocked;
+      $("debug-secret-visible").textContent = secretChallengeVisible;
+      $("debug-secret-input").textContent = $("secret-input").value || "(empty)";
+      $("debug-secret-result").textContent = secretResult;
+
+      $("secret-card").classList.toggle("show", (affection >= 75 && !secretUnlocked) || secretUnlocked);
+      $("secret-input-area").hidden = !secretChallengeVisible || secretUnlocked;
+      if (secretUnlocked) {
+        $("secret-title").textContent = "澪的秘密";
+        $("secret-body").textContent = "其实……我每天都在等你来练习。只是这种话，让我自己说出来有点不公平。 已解锁";
+        $("secret-open").hidden = true;
+      }
+    }
+
+    function assistantReply(valid) {
+      const reply = valid
+        ? "嗯，比刚才自然多了。看来你也不是完全没天赋。"
+        : "嗯……用我们今天学的日语试试看？";
+      addMessage("澪", reply);
+      setExpression(valid ? "happy" : "serious");
+      render();
+    }
+
+    function handleSend() {
+      const text = input.trim();
+      if (!text) {
+        validInput = false;
+        lastAction = "send blocked";
+        render();
+        return;
+      }
+
+      const valid = isValidJapaneseLearningInput(text);
+      validInput = valid;
+      addMessage("我", text);
+      if (valid) {
+        affection = Math.min(affection + 2, 100);
+        setExpression("happy");
+        lastAction = "valid learning input";
+      } else {
+        setExpression("serious");
+        lastAction = "invalid input no reward";
+      }
+
+      input = "";
+      $("input").value = "";
+      render();
+      setTimeout(() => assistantReply(valid), 800);
+    }
+
+    function handleSecretSubmit() {
+      const value = $("secret-input").value.trim();
+      if (!value) {
+        lastAction = "secret blocked empty";
+        render();
+        return;
+      }
+      const ok = ["一緒", "帰り", "帰りませんか", "いっしょ", "かえり", "一起", "回家"].some((keyword) => value.includes(keyword));
+      if (ok) {
+        secretUnlocked = true;
+        secretChallengeVisible = false;
+        secretResult = "success";
+        affection = Math.min(affection + 10, 100);
+        setExpression("shy");
+        addMessage("澪", "……你还真的说出来了啊。真拿你没办法。");
+        lastAction = "secret success";
+      } else {
+        secretResult = "failed";
+        setExpression("serious");
+        addMessage("澪", "这里稍微不太自然。再说一次，我听着。");
+        lastAction = "secret failed";
+      }
+      render();
+    }
+
+    $("input").addEventListener("input", (event) => {
+      input = event.target.value;
+      validInput = isValidJapaneseLearningInput(input);
+      lastAction = "typing";
+      render();
+    });
+
+    $("send").addEventListener("click", handleSend);
+
+    $("continue").addEventListener("click", () => {
+      storyIndex = Math.min(storyIndex + 1, story.length - 1);
+      lastAction = "continue success";
+      render();
+    });
+
+    $("speak").addEventListener("click", () => {
+      try {
+        if (!("speechSynthesis" in window)) {
+          lastAction = "speech failed";
+          render();
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(story[storyIndex][1]);
+        utterance.lang = "ja-JP";
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+        lastAction = "speech success";
+      } catch (error) {
+        lastAction = "speech failed";
+      }
+      render();
+    });
+
     $("debug-toggle").addEventListener("click", () => $("debug").classList.toggle("open"));
-    $("secret-open").addEventListener("click", () => { $("secret-input-area").hidden = false; lastAction = "secret challenge opened"; render(); });
+    $("secret-open").addEventListener("click", () => {
+      secretChallengeVisible = true;
+      lastAction = "secret challenge opened";
+      render();
+    });
     $("secret-input").addEventListener("input", render);
-    $("secret-submit").addEventListener("click", () => { const value = $("secret-input").value.trim(); if (!value) { lastAction = "secret blocked empty"; render(); return; } const ok = ["一緒","帰り","帰りませんか","いっしょ","かえり","一起","回家"].some(k => value.includes(k)); if (ok) { secretUnlocked = true; secretResult = "success"; affection = Math.min(affection + 10, 100); addMessage("澪", "……你还真的说出来了啊。真拿你没办法。"); lastAction = "secret success"; } else { secretResult = "failed"; addMessage("澪", "差一点点呢……再试试看？"); lastAction = "secret failed"; } render(); });
+    $("secret-submit").addEventListener("click", handleSecretSubmit);
+
+    setExpression("normal");
     render();
   </script>
 </body>
